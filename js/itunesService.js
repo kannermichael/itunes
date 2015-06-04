@@ -9,5 +9,32 @@ app.service('itunesService', function($http, $q){
   //Note that in the above line, artist is the parameter being passed in. 
   //You can return the http request or you can make your own promise in order to manipulate the data before you resolve it.
 
-    //Code here
+	this.tunes = function(artist) {
+		var deferred = $q.defer();
+		$http ({
+			method: 'jsonp',
+			url: 'https://itunes.apple.com/search?term=' + artist + '&callback=JSON_CALLBACK',
+		}).then(function(response){
+			var parsedResponse = []
+				for(var i = 0; i < response.data.results.length; i++) {
+					var newSong = {
+					Artist: response.data.results[i].artistName,
+					Song: response.data.results[i].trackName,
+					Collection: response.data.results[i].collectionName,
+					Type: response.data.results[i].primaryGenreName,
+					AlbumArt: response.data.results[i].artworkUrl60,
+					CollectionPrice: response.data.results[i].collectionPrice,
+					Play: response.data.results[i].previewUrl,
+					}
+					parsedResponse.push(newSong);
+				}
+
+
+
+
+
+			deferred.resolve(parsedResponse);
+		})
+		return deferred.promise;
+	}
 });
